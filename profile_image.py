@@ -57,6 +57,29 @@ def fitt_muraki(intensity_map):
             s = self.s.value
             N = self.N.value
             return np.piecewise(x,[((x >= 1.0) & (x<= N)),x >= N],[lambda x : x0*(1.0 -s**x), lambda x: x0*(1 -s**x)*s**(x-N)])
+    
+    
+    class Muraki2(Component):
+        def __init__(self, parameter_1=1, parameter_2=2, parameter_3=3, parameter_4=4):
+            Component.__init__(self, ('x0', 's1', 's2', 'N'))
+            self.x0.value = 1.25
+            self.s1.value = 0.5
+            self.s2.value = 0.5
+            self.N.value = 4
+            self.x0.bmin = 0
+            self.x0.bmax = 1
+            self.s1.bmin = 0
+            self.s1.bmax = 1
+            self.s2.bmin = 0
+            self.s2.bmax = 1
+            self.N.bmin = 0
+            self.N.bmax = 50
+        def function(self, x):
+            x0 = self.x0.value
+            s1 = self.s1.value
+            s2 = self.s2.value
+            N = self.N.value
+            return np.piecewise(x,[((x >= 1.0) & (x<= N)),x >= N],[lambda x : x0*(1.0 -s1**x), lambda x: x0*(1 -s2**x)*s2**(x-N)])
 
     def f(x,x0,s,N):
         return np.piecewise(x,[((x >= 1.0) & (x<= N)),x >= N],[lambda x : x0*(1.0 -s**x), lambda x: x0*(1 -s**x)*s**(x-N)])

@@ -260,7 +260,7 @@ def intensity_map2(image, atom_lattice):
     sublattice_B._sort_atom_planes_by_zone_vector()
     sublattice_B._remove_bad_zone_vectors()
     
-    direction=0
+    direction=2
 
     zone_vector = sublattice_B.zones_axis_average_distances[direction]
     atom_planes = sublattice_B.atom_planes_by_zone_vector[zone_vector]

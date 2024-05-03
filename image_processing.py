@@ -14,7 +14,7 @@ hs.preferences.save()
 plt.rcParams['figure.figsize'] = (8,8)
 
 
-def make_lattice(path, image, optimal_separation, optimal_separation_d , dumbell):
+def make_lattice(path, image, optimal_separation, optimal_separation_d = None, dumbell = False):
     if (os.path.exists(path+'\\data.hdf5')):
         atom_lattice = am.load_atom_lattice_from_hdf5(path+'\\data.hdf5',construct_zone_axes=False)
     else:
@@ -105,7 +105,8 @@ def find_optimal_pixel_sep(image, pixel_size_pm, gaussian = False):
 
 
 
-
+ # Begin of the code
+ 
 global pixels_cropped, pixel_size_pm, inner_angle, outer_angle
 pixel_size_pm=6.652 #3.326 #6.652 # pm
 inner_angle=130
@@ -117,7 +118,7 @@ det_path= open_file()
 det_image=hs.signals.Signal2D(plt.imread(det_path[0]))
 
 global dumbell
-dumbell = True
+dumbell = False
 
 for file_path in file_paths:
 
@@ -125,8 +126,9 @@ for file_path in file_paths:
     print(et - st)
     
     s=hs.load(file_path)
-    #s = s.isig[500:1500, 500:3500]
-    #s = s.isig[1000:2333, 0:4000]
+    pixelx, pixely = s.axes_manager[0].size, s.axes_manager[1].size
+    s = s.isig[round(0.3*pixelx):round(0.7*pixelx), 0:round(0.7*pixelx)]
+    
     path = os.path.splitext(file_path)[0]
     if not (os.path.exists(path)):
         os.mkdir(path)
@@ -136,21 +138,19 @@ for file_path in file_paths:
     SL.scale(det_image)
     SL_pca.scale(det_image)
     SL_pca.image.data=SL.PCA(8)
-    optimal_separation_d = 24
-    #optimal_separation = find_optimal_pixel_sep(SL.image, SL.pixel_size_pm ,gaussian=False)
-    optimal_separation = 9
-    atom_lattice = make_lattice(path, SL.image, optimal_separation, optimal_separation_d, dumbell)
+    optimal_separation = find_optimal_pixel_sep(SL.image, SL.pixel_size_pm ,gaussian=False)
+    atom_lattice = make_lattice(path, SL.image, optimal_separation)
     
     
     # Intensity map
     pca_imag =  SL_pca.image.data
     images = ["pca_imag"]
-    intensity_A, intensity_B = make_intensity_map(path, atom_lattice, images)
+    intensity_B = make_intensity_map2(path, atom_lattice, images)
 
     
     #compare(original_imag , pca_imag, 'PCA - 8')
     #intensity_A, intensity_B = intensity_B, intensity_A
-    #composition_profile(intensity_A, intensity_B, atom_lattice)
+    composition_profile(intensity_B, intensity_B, atom_lattice)
     
     print('end')
 
